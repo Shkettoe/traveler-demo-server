@@ -9,13 +9,16 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { QueryUserDto } from './dto/query-user.dto';
+import { AbstractService } from 'src/common/abstract.service';
 
 @Injectable()
-export class UsersService {
+export class UsersService extends AbstractService<QueryUserDto> {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) {
+    super(usersRepository);
+  }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -24,10 +27,6 @@ export class UsersService {
     } catch (err) {
       throw new BadRequestException(err);
     }
-  }
-
-  async findAll(queryUserDto: QueryUserDto) {
-    return await this.usersRepository.findBy(queryUserDto);
   }
 
   async findOne(id: number) {
