@@ -12,6 +12,12 @@ export class Trip extends AppEntity {
   @ManyToOne(() => User, (user) => user.trips)
   user: User;
 
+  @Column()
+  startDate: Date;
+
+  @Column()
+  endDate: Date;
+
   @ManyToMany(() => Destination, (destination) => destination.trips)
   destinations: Destination[];
 
