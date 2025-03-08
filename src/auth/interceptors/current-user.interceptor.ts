@@ -16,8 +16,8 @@ export class CurrentUserInterceptor implements NestInterceptor {
   ): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
     if (req.user) {
-      const { id } = req.user;
-      req.user = await this.usersServise.findOne(id);
+      const { userId } = req.user;
+      req.user = await this.usersServise.findOne(userId);
     }
     return next.handle();
   }

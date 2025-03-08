@@ -4,17 +4,16 @@ import {
   Post,
   UseGuards,
   Req,
-  Res,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { Public } from './is-public.decorator';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
 import { User } from 'src/users/entities/user.entity';
-import { RegistrationInterceptorInterceptor } from './interceptors/registration-interceptor.interceptor';
+import { RegistrationInterceptor } from './interceptors/registration.interceptor';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignInDto } from './dto/sign-in.dto';
 @Controller('auth')
@@ -28,12 +27,8 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  signIn(
-    @Req() req: Request & { user: Partial<User> },
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  signIn(@Req() req: Request & { user: Partial<User> }) {
     const { access_token } = this.authService.signToken(req.user);
-    res.cookie('access_token', access_token, { httpOnly: true });
     return { token: access_token, ...req.user };
   }
 
@@ -42,13 +37,9 @@ export class AuthController {
   })
   @Public()
   @Post('register')
-  @UseInterceptors(RegistrationInterceptorInterceptor)
-  signUp(
-    @Req() req: Request & { user: Partial<User> },
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  @UseInterceptors(RegistrationInterceptor)
+  signUp(@Req() req: Request & { user: Partial<User> }) {
     const { access_token } = this.authService.signToken(req.user);
-    res.cookie('access_token', access_token, { httpOnly: true });
     return { token: access_token, ...req.user };
   }
 

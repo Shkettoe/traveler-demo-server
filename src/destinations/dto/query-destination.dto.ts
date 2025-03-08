@@ -1,4 +1,4 @@
-import { IntersectionType, PartialType } from '@nestjs/swagger';
+import { IntersectionType, OmitType, PartialType } from '@nestjs/swagger';
 import { CreateDestinationDto } from './create-destination.dto';
 import { QueryDto } from '../../common/dto/query.dto';
 import { IsOptional, IsEnum } from 'class-validator';
@@ -11,7 +11,7 @@ enum OrderBy {
 }
 
 export class QueryDestinationDto extends IntersectionType(
-  PartialType(CreateDestinationDto),
+  PartialType(OmitType(CreateDestinationDto, ['media'])),
   QueryDto,
 ) {
   @IsOptional()

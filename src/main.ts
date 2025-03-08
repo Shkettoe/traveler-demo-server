@@ -4,9 +4,19 @@ import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
 import { DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
+  app.enableCors({
+    origin: configService.get<string>('CORS_ORIGIN'),
+    allowedHeaders: 'Content-Type, Access-Control-Allow-Headers, Authorization',
+    credentials: true,
+  });
+
+  app.use('/public', express.static('public'));
 
   const config = new DocumentBuilder()
     .setTitle('Travel planner')
@@ -19,7 +29,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, documentFactory);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 3000;
 
   await app.listen(port);

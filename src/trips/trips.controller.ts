@@ -13,7 +13,7 @@ import { TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { QueryTripDto } from './dto/query-trip.dto';
-import { OwnerInterceptorInterceptor } from 'src/auth/interceptors/owner-interceptor.interceptor';
+import { OwnerInterceptor } from 'src/auth/interceptors/owner.interceptor';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/is-public.decorator';
 import { CreateExpenseDto } from 'src/expenses/dto/create-expense.dto';
@@ -24,7 +24,7 @@ export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
 
   @Post()
-  @UseInterceptors(OwnerInterceptorInterceptor)
+  @UseInterceptors(OwnerInterceptor)
   create(@Body() createTripDto: CreateTripDto) {
     return this.tripsService.create(createTripDto);
   }

@@ -11,7 +11,7 @@ import { User } from '../../users/entities/user.entity';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class RegistrationInterceptorInterceptor implements NestInterceptor {
+export class RegistrationInterceptor implements NestInterceptor {
   constructor(private readonly authService: AuthService) {}
 
   async intercept(

@@ -1,9 +1,20 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+  Res,
+} from '@nestjs/common';
 import { DestinationsService } from './destinations.service';
 import { CreateDestinationDto } from './dto/create-destination.dto';
 import { QueryDestinationDto } from './dto/query-destination.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Public } from 'src/auth/is-public.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @Controller('destinations')
 @ApiBearerAuth()
@@ -11,8 +22,17 @@ export class DestinationsController {
   constructor(private readonly destinationsService: DestinationsService) {}
 
   @Post()
-  async create(@Body() createDestinationDto: CreateDestinationDto) {
-    return await this.destinationsService.create(createDestinationDto);
+  @UseInterceptors(FileInterceptor('media'))
+  @ApiBody({ type: CreateDestinationDto })
+  @ApiConsumes('multipart/form-data')
+  async create(
+    @Body() createDestinationDto: CreateDestinationDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.destinationsService.create({
+      ...createDestinationDto,
+      media: `uploads/destinations/${file.filename}`,
+    });
   }
 
   @Public()
