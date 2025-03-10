@@ -7,7 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { QueryUserDto } from './dto/query-user.dto';
 import { AbstractService } from 'src/common/abstract.service';
 
@@ -25,6 +25,9 @@ export class UsersService extends AbstractService<QueryUserDto> {
       const user = this.usersRepository.create(createUserDto);
       return await this.usersRepository.save(user);
     } catch (err) {
+      if (err instanceof QueryFailedError) {
+        throw new BadRequestException('Email is taken');
+      }
       throw new BadRequestException(err);
     }
   }

@@ -30,7 +30,7 @@ export class DestinationsController {
   ) {
     return await this.destinationsService.create({
       ...createDestinationDto,
-      media: `uploads/destinations/${file.filename}`,
+      media: file ? `uploads/destinations/${file.filename}` : null,
     });
   }
 

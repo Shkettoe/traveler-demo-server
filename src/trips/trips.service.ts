@@ -24,10 +24,10 @@ export class TripsService extends AbstractService<QueryTripDto> {
   }
 
   async create(createTripDto: CreateTripDto) {
+    if (createTripDto.startDate > createTripDto.endDate) {
+      throw new BadRequestException('Start date must be before end date');
+    }
     try {
-      if (createTripDto.startDate > createTripDto.endDate) {
-        throw new Error('Start date must be before end date');
-      }
       const trip = this.tripsRepository.create(createTripDto as Partial<Trip>);
       return await this.tripsRepository.save(trip);
     } catch (err) {
@@ -56,7 +56,6 @@ export class TripsService extends AbstractService<QueryTripDto> {
     try {
       return await this.tripsRepository.delete(id);
     } catch (err) {
-      console.log(err);
       throw new BadRequestException(err);
     }
   }

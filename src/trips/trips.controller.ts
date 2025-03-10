@@ -9,6 +9,7 @@ import {
   Query,
   UseInterceptors,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -19,6 +20,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/is-public.decorator';
 import { CreateExpenseDto } from 'src/expenses/dto/create-expense.dto';
 import { User } from '../users/entities/user.entity';
+import { AuthorGuard } from '../auth/guards/author.guard';
 
 @Controller('trips')
 @ApiBearerAuth()
@@ -53,16 +55,19 @@ export class TripsController {
     return this.tripsService.findOne(id);
   }
 
+  @UseGuards(AuthorGuard)
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateTripDto: UpdateTripDto) {
     return this.tripsService.update(id, updateTripDto);
   }
 
+  @UseGuards(AuthorGuard)
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.tripsService.remove(id);
   }
 
+  @UseGuards(AuthorGuard)
   @Post(':id/destinations/:destinationId')
   async addDestinationToTrip(
     @Param('id') id: number,
@@ -71,6 +76,7 @@ export class TripsController {
     return await this.tripsService.addDestinationToTrip(id, destinationId);
   }
 
+  @UseGuards(AuthorGuard)
   @Post(':id/expenses')
   async addExpenseToTrip(
     @Param('id') id: number,

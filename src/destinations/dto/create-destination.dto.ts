@@ -12,5 +12,5 @@ export class CreateDestinationDto {
 
   @IsOptional()
   @ApiProperty({ type: 'string', format: 'binary' })
-  media: any;
+  media?: any;
 }
