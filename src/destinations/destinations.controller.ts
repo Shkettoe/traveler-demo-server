@@ -14,7 +14,6 @@ import { QueryDestinationDto } from './dto/query-destination.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Public } from 'src/auth/is-public.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
 
 @Controller('destinations')
 @ApiBearerAuth()
@@ -23,8 +22,8 @@ export class DestinationsController {
 
   @Post()
   @UseInterceptors(FileInterceptor('media'))
-  @ApiBody({ type: CreateDestinationDto })
   @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: CreateDestinationDto })
   async create(
     @Body() createDestinationDto: CreateDestinationDto,
     @UploadedFile() file: Express.Multer.File,

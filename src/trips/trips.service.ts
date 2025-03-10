@@ -56,6 +56,7 @@ export class TripsService extends AbstractService<QueryTripDto> {
     try {
       return await this.tripsRepository.delete(id);
     } catch (err) {
+      console.log(err);
       throw new BadRequestException(err);
     }
   }

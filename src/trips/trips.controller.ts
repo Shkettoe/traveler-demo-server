@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -17,6 +18,7 @@ import { OwnerInterceptor } from 'src/auth/interceptors/owner.interceptor';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/is-public.decorator';
 import { CreateExpenseDto } from 'src/expenses/dto/create-expense.dto';
+import { User } from '../users/entities/user.entity';
 
 @Controller('trips')
 @ApiBearerAuth()
@@ -35,19 +37,30 @@ export class TripsController {
     return this.tripsService.findAll(queryTripDto);
   }
 
+  @Get('me')
+  findMine(
+    @Req() req: Request & { user: { userId: number } },
+    @Query() queryTripDto: QueryTripDto,
+  ) {
+    return this.tripsService.findAll({
+      user: { id: req.user.userId } as User,
+      ...queryTripDto,
+    });
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tripsService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.tripsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripsService.update(+id, updateTripDto);
+  update(@Param('id') id: number, @Body() updateTripDto: UpdateTripDto) {
+    return this.tripsService.update(id, updateTripDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tripsService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.tripsService.remove(id);
   }
 
   @Post(':id/destinations/:destinationId')

@@ -18,9 +18,13 @@ export class Trip extends AppEntity {
   @Column()
   endDate: Date;
 
-  @ManyToMany(() => Destination, (destination) => destination.trips)
+  @ManyToMany(() => Destination, (destination) => destination.trips, {
+    onDelete: 'CASCADE',
+  })
   destinations: Destination[];
 
-  @OneToMany(() => Expense, (expense) => expense.trip)
+  @OneToMany(() => Expense, (expense) => expense.trip, {
+    cascade: ['insert', 'update'],
+  })
   expenses: Expense[];
 }

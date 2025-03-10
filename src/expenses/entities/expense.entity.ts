@@ -23,6 +23,8 @@ export class Expense extends AppEntity {
   })
   category: ExpenseCategory;
 
-  @ManyToOne(() => Trip, (trip) => trip.expenses)
+  @ManyToOne(() => Trip, (trip) => trip.expenses, {
+    onDelete: 'CASCADE',
+  })
   trip: Trip;
 }

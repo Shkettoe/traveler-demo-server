@@ -7,7 +7,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { Public } from './is-public.decorator';
@@ -16,6 +15,7 @@ import { User } from 'src/users/entities/user.entity';
 import { RegistrationInterceptor } from './interceptors/registration.interceptor';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignInDto } from './dto/sign-in.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 @Controller('auth')
 @ApiBearerAuth()
 export class AuthController {
@@ -25,7 +25,7 @@ export class AuthController {
     type: SignInDto,
   })
   @Public()
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   signIn(@Req() req: Request & { user: Partial<User> }) {
     const { access_token } = this.authService.signToken(req.user);

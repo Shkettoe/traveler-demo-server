@@ -1,8 +1,12 @@
 import { IsEnum, IsOptional } from 'class-validator';
 import { QueryDto } from '../../common/dto/query.dto';
 import { Trip } from '../entities/trip.entity';
-import { IntersectionType, PartialType, PickType } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import {
+  ApiHideProperty,
+  IntersectionType,
+  PartialType,
+  PickType,
+} from '@nestjs/swagger';
 import { User } from '../../users/entities/user.entity';
 
 enum OrderBy {
@@ -12,10 +16,13 @@ enum OrderBy {
 }
 
 export class QueryTripDto extends IntersectionType(
-  PartialType(PickType(Trip, ['title'])),
+  PartialType(PickType(Trip, ['title', 'endDate', 'startDate'])),
   QueryDto,
 ) {
   @IsOptional()
   @IsEnum(OrderBy)
   orderBy?: OrderBy;
+
+  @ApiHideProperty()
+  user?: User;
 }

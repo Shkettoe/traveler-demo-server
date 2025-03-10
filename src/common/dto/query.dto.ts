@@ -9,7 +9,7 @@ enum Order {
 export class QueryDto {
   @IsNumber()
   @IsOptional()
-  @Min(1)
+  @Min(0)
   @Transform(({ value }) => Number(value))
   page?: number;
 
