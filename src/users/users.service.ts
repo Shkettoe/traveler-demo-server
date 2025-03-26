@@ -45,6 +45,9 @@ export class UsersService extends AbstractService<QueryUserDto> {
     try {
       return await this.usersRepository.update(id, updateUserDto);
     } catch (err) {
+      if (err instanceof QueryFailedError) {
+        throw new BadRequestException('Email is taken');
+      }
       throw new BadRequestException(err);
     }
   }

@@ -13,6 +13,7 @@ import { Destination } from 'src/destinations/entities/destination.entity';
 import { CreateExpenseDto } from 'src/expenses/dto/create-expense.dto';
 import { Expense } from 'src/expenses/entities/expense.entity';
 import { AbstractService } from 'src/common/abstract.service';
+import { UpdateExpenseDto } from '../expenses/dto/update-expense.dto';
 @Injectable()
 export class TripsService extends AbstractService<QueryTripDto> {
   constructor(
@@ -46,7 +47,16 @@ export class TripsService extends AbstractService<QueryTripDto> {
 
   async update(id: number, updateTripDto: UpdateTripDto) {
     try {
-      return await this.tripsRepository.update(id, updateTripDto);
+      const { destinations, ...rest } = updateTripDto;
+      const trip = await this.findOne(id);
+
+      Object.assign(trip, rest);
+
+      if (destinations) {
+        trip.destinations = destinations.map((id) => ({ id })) as Destination[];
+      }
+
+      return await this.tripsRepository.save(trip);
     } catch (err) {
       throw new BadRequestException(err);
     }
@@ -70,9 +80,41 @@ export class TripsService extends AbstractService<QueryTripDto> {
     return await this.tripsRepository.save(trip);
   }
 
+  async removeDestinationFromTrip(tripId: number, destinationId: number) {
+    const trip = await this.findOne(tripId);
+    trip.destinations = trip.destinations.filter(
+      (destination) => destination.id !== destinationId,
+    );
+    return await this.tripsRepository.save(trip);
+  }
+
   async addExpenseToTrip(tripId: number, createExpenseDto: CreateExpenseDto) {
     const expense = this.expensesRepository.create(createExpenseDto);
     expense.trip = { id: tripId } as Trip;
     return await this.expensesRepository.save(expense);
+  }
+
+  async findExpense(expenseId: number) {
+    const expense = await this.expensesRepository.findOne({
+      where: { id: expenseId },
+    });
+    if (!expense) throw new NotFoundException('Expense not found');
+    return expense;
+  }
+
+  async updateExpense(expenseId: number, updateExpenseDto: UpdateExpenseDto) {
+    const expense = await this.findExpense(expenseId);
+    return await this.expensesRepository.save({
+      ...expense,
+      ...updateExpenseDto,
+    });
+  }
+
+  async deleteExpense(expenseId: number) {
+    try {
+      return await this.expensesRepository.delete(expenseId);
+    } catch (err) {
+      throw new BadRequestException(err);
+    }
   }
 }
