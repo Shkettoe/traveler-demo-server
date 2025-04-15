@@ -70,6 +70,9 @@ export class TripsService extends AbstractService<QueryTripDto> {
     }
   }
 
+  /**
+   * @deprecated
+   */
   async addDestinationToTrip(tripId: number, destinationId: number) {
     const trip = await this.findOne(tripId);
     const destination = { id: Number(destinationId) };
@@ -80,6 +83,9 @@ export class TripsService extends AbstractService<QueryTripDto> {
     return await this.tripsRepository.save(trip);
   }
 
+  /**
+   * @deprecated
+   */
   async removeDestinationFromTrip(tripId: number, destinationId: number) {
     const trip = await this.findOne(tripId);
     trip.destinations = trip.destinations.filter(

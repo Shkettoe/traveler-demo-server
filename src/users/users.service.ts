@@ -8,8 +8,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
-import { QueryUserDto } from './dto/query-user.dto';
 import { AbstractService } from 'src/common/abstract.service';
+import { QueryUserDto } from './dto/query-user.dto';
 
 @Injectable()
 export class UsersService extends AbstractService<QueryUserDto> {

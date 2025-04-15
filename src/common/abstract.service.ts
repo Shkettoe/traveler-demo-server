@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import {
+  FindOptionsOrder,
+  FindOptionsWhere,
+  ObjectLiteral,
+  Repository,
+} from 'typeorm';
 
 interface AbstractQueryDto {
   relations?: string[];
@@ -11,19 +16,20 @@ interface AbstractQueryDto {
 }
 
 @Injectable()
-export abstract class AbstractService<QueryDto extends AbstractQueryDto> {
+export abstract class AbstractService<
+  Dto extends AbstractQueryDto = AbstractQueryDto,
+> {
   constructor(private readonly repository: Repository<any>) {}
-
-  async findAll(queryDto: QueryDto) {
+  async findAll(queryDto: Dto) {
     const { relations, limit, order, orderBy, page, ...where } = queryDto;
 
     return await this.repository.find({
-      where,
+      where: where as FindOptionsWhere<any>,
       relations,
       order: {
         [orderBy || 'createdAt']: order || 'DESC',
       },
-      skip: (page || 1 - 1) * (limit || 10),
+      skip: ((page || 1) - 1) * (limit || 10),
       take: limit || 10,
     });
   }
