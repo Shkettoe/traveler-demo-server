@@ -5,20 +5,34 @@ import { Destination } from './entities/destination.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 import { QueryDestinationDto } from './dto/query-destination.dto';
 import { AbstractService } from 'src/common/abstract.service';
+import { FileManagerService } from 'src/file-manager.service';
 @Injectable()
 export class DestinationsService extends AbstractService<QueryDestinationDto> {
   constructor(
     @InjectRepository(Destination)
-    private destinationRepository: Repository<Destination>,
+    private readonly destinationRepository: Repository<Destination>,
+    private readonly fileManagerService: FileManagerService,
   ) {
     super(destinationRepository);
   }
 
-  async create(createDestinationDto: CreateDestinationDto) {
+  async create(
+    createDestinationDto: CreateDestinationDto,
+    file?: Express.Multer.File,
+  ) {
     try {
-      const destination =
-        this.destinationRepository.create(createDestinationDto);
-      return await this.destinationRepository.save(destination);
+      const destination = this.destinationRepository.create({
+        ...createDestinationDto,
+        media: file ? `uploads/destinations/${file.filename}` : undefined,
+      });
+      const savedDestination =
+        await this.destinationRepository.save(destination);
+      if (file) {
+        const fileUrl = await this.fileManagerService.uploadFile(file);
+        savedDestination.media = fileUrl.Location;
+        return await this.destinationRepository.save(savedDestination);
+      }
+      return savedDestination;
     } catch (error) {
       if (error instanceof QueryFailedError) {
         throw new BadRequestException('Destination already exists');

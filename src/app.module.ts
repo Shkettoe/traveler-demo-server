@@ -9,6 +9,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { TripsModule } from './trips/trips.module';
 import { DestinationsModule } from './destinations/destinations.module';
+import { FileManagerService } from './file-manager.service';
 import dataSource from '../db/data-source';
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import dataSource from '../db/data-source';
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
     },
+    FileManagerService,
   ],
 })
 export class AppModule {}

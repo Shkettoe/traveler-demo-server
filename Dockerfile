@@ -20,4 +20,5 @@ RUN npm run build
 EXPOSE 5000
 
 # Command to run the application
-CMD ["npm", "run", "start:dev"]
+CMD ["sh", "-c", "npm run typeorm migration:run && npm run start:prod"]
+# CMD ["npm", "run", "start:prod"]

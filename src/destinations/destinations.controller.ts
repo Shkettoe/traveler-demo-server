@@ -6,7 +6,6 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
-  Res,
 } from '@nestjs/common';
 import { DestinationsService } from './destinations.service';
 import { CreateDestinationDto } from './dto/create-destination.dto';
@@ -21,6 +20,7 @@ export class DestinationsController {
   constructor(private readonly destinationsService: DestinationsService) {}
 
   @Post()
+  @Public()
   @UseInterceptors(FileInterceptor('media'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateDestinationDto })
@@ -28,10 +28,7 @@ export class DestinationsController {
     @Body() createDestinationDto: CreateDestinationDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.destinationsService.create({
-      ...createDestinationDto,
-      media: file ? `uploads/destinations/${file.filename}` : null,
-    });
+    return await this.destinationsService.create(createDestinationDto, file);
   }
 
   @Public()
