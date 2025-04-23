@@ -28,12 +28,13 @@ export class DestinationsService extends AbstractService<QueryDestinationDto> {
       const savedDestination =
         await this.destinationRepository.save(destination);
       if (file) {
-        const fileUrl = await this.fileManagerService.uploadFile(file);
-        savedDestination.media = fileUrl.Location;
+        const fileUrl = await this.fileManagerService.upload(file);
+        savedDestination.media = fileUrl;
         return await this.destinationRepository.save(savedDestination);
       }
       return savedDestination;
     } catch (error) {
+      console.log(error);
       if (error instanceof QueryFailedError) {
         throw new BadRequestException('Destination already exists');
       }
